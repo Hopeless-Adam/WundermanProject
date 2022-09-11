@@ -7,6 +7,7 @@
     tools:context=".ProductList">
 
     <ListView
+        android:id="@+id/listview"
         android:layout_width="370dp"
         android:layout_height="645dp"
         app:layout_constraintBottom_toBottomOf="parent"
