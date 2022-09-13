@@ -2,14 +2,18 @@ package com.example.wundermanproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,8 +36,8 @@ public class ProductList extends AppCompatActivity {
     String jsonString = "https://run.mocky.io/v3/cdc28c44-ea46-4e03-b6cc-c7782223e96d";
 
     ArrayList<HashMap<String,String>> productList;
-
-    int imageid;
+    HashMap<String,String> productswithID = new HashMap<>();
+    ArrayList<String> productIDs = new ArrayList<String>();
 
     private ListView listView;
 
@@ -95,21 +99,35 @@ public class ProductList extends AppCompatActivity {
            try {
                JSONObject jsonObject = new JSONObject(s);
                JSONArray jsonArray = jsonObject.getJSONArray("Products");
-               System.out.println(jsonArray.length());
+
+               for (int i=10; i<894; i++) {
+                    jsonArray.remove(i);
+               }
+
                //i<jsonArray.length() for entire array
-               for (int i = 0; i<jsonArray.length(); i++){
+               for (int i = 0; i<2; i++){
                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                    ProductName = jsonObject1.getString("name");
                    ProductPrice = jsonObject1.getString("cost");
+                   ProductID = jsonObject1.getString("prodid");
 
+
+                   productIDs.add(ProductID);
 
                    //Hashmap
-                   HashMap<String,String> products = new HashMap<>();
-                   products.put("name", ProductName);
-                   products.put("cost", ProductPrice);
+                   HashMap<String,String> productswithcost = new HashMap<>();
+                   productswithcost.put("name", ProductName);
+                   productswithcost.put("cost", ProductPrice);
 
-                   productList.add(products);
+
+                   productswithID.put(ProductID, ProductName + " " + ProductPrice);
+
+                   /*String image_url = "https://images.riverisland.com/is/image/RiverIsland/"+ProductID+"_main";
+                   Picasso.get().load(image_url).into(imageView);*/
+
+
+                   productList.add(productswithcost);
 
                }
            } catch (JSONException e) {
@@ -122,7 +140,12 @@ public class ProductList extends AppCompatActivity {
            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                @Override
                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                   Toast.makeText(getApplicationContext(),"You Selected "+ProductName, Toast.LENGTH_SHORT).show();
+                   Toast.makeText(getApplicationContext(),"You Selected "+ productIDs.get(i) , Toast.LENGTH_SHORT).show();
+                   String ProductAtPos = productIDs.get(i);
+                   Intent intent = new Intent(ProductList.this, IndividualProduct.class);
+                   intent.putExtra("key", ProductAtPos);
+                   intent.putExtra("key2", i);
+                   startActivity(intent);
                }
            });
 
